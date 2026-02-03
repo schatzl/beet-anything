@@ -1,4 +1,4 @@
-# :seedling: MixxiM
+# :seedling: the-lazy-gardener
 Tool to easily select matching vegetables for mixed bed cultivation
 
 ## Motivation
