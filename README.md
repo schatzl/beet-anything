@@ -1,4 +1,4 @@
-# :seedling: the-lazy-gardener
+# :seedling: Beet Anything
 Tool to easily select matching vegetables for mixed bed cultivation
 
 ## Motivation
