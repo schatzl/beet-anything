@@ -1,5 +1,5 @@
 # :seedling: Beet Anything
-A one-hour vibe coding project
+A one-hour vibe coding project.
 
 Web app to easily select matching vegetables for mixed bed cultivation
 
