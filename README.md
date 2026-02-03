@@ -11,8 +11,7 @@ A modern, self-contained Progressive Web App for planning your vegetable garden 
 **Status**: Beta  
 **License**: Free for private use
 
-**Preview**: [[https://target23.de/beet-anything.html]]
-
+**Preview**: [Test page](https://target23.de/beet-anything.html)
 ---
 
 ## ✨ Features
@@ -660,7 +659,7 @@ Found a bug? Have a feature idea? Want to contribute?
 
 **Version**: 1.1 i18n  
 **Last Updated**: February 2025  
-**Status**: Production Ready  
+**Status**: Beta
 **File**: beet-anything-i18n.html
 
 ---
