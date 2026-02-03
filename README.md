@@ -8,7 +8,7 @@ A modern, self-contained Progressive Web App for planning your vegetable garden 
 
 **Version**: 1.1 i18n  
 **Languages**: English, German, Italian  
-**Status**: Production Ready  
+**Status**: Beta  
 **License**: Free for private use
 
 ---
