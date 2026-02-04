@@ -4,10 +4,16 @@
 
 A modern, self-contained Progressive Web App for planning your vegetable garden across multiple years, considering crop rotation rules, companion planting relationships, and natural pest protection strategies.
 
+*A 24h vibe coding project*
+
 **Version**: 1.2 Pest Protection  
-**Languages**: English, German, Italian  
+**Last Updated**: February 2025  
 **Status**: Production Ready  
-**License**: Free for private use
+**Languages**: English, German, Italian  
+**File**: beet-anything-i18n.html  
+**GitHub**: https://github.com/schatzl/beet-anything  
+**License**: Free for any use - Personal, commercial, educational, or otherwise.  
+**Live demo**: [Beet Anything](https://target23.de/beet-anything-i18n.html)
 
 ---
 
@@ -806,15 +812,5 @@ Found a bug? Have a feature idea? Want to contribute?
 ---
 
 **Made with 🌱 for gardeners who care about healthy soil and happy plants**
-
-**Version**: 1.2 Pest Protection  
-**Last Updated**: February 2025  
-**Status**: Production Ready  
-**File**: beet-anything-i18n.html  
-**GitHub**: https://github.com/schatzl/beet-anything  
-**License**: Free for any use - Personal, commercial, educational, or otherwise.  
-**Live demo**: [Beet Anything](https://target23.de/beet-anything-i18n.html)
-
----
 
 *Happy Planning! 🌿🥕🍅🐞*
