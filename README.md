@@ -811,7 +811,9 @@ Found a bug? Have a feature idea? Want to contribute?
 **Last Updated**: February 2025  
 **Status**: Production Ready  
 **File**: beet-anything-i18n.html  
-**GitHub**: https://github.com/schatzl/beet-anything
+**GitHub**: https://github.com/schatzl/beet-anything  
+**License**: Free for any use - Personal, commercial, educational, or otherwise.  
+**Live demo**: [Beet Anything](https://target23.de/beet-anything-i18n.html)
 
 ---
 
