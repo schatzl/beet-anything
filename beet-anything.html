@@ -43,6 +43,10 @@
             box-sizing: border-box;
         }
         
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             font-feature-settings: 'liga' 1, 'calt' 1;
@@ -79,8 +83,7 @@
         header {
             text-align: center;
             margin-bottom: 3rem;
-            padding: 2rem 0;
-            border-bottom: 2px solid var(--leaf-green);
+            padding: 3.5rem 0 2rem 0;
             position: relative;
         }
         
@@ -167,11 +170,10 @@
         }
         
         .panel {
-            background: white;
-            border-radius: 12px;
+            background: var(--cream);
+            border-radius: 0;
             padding: 2rem;
-            box-shadow: 0 4px 20px rgba(58, 47, 40, 0.08);
-            border: 1px solid rgba(74, 124, 89, 0.1);
+            border: none;
         }
         
         .panel h2 {
@@ -454,6 +456,8 @@
             cursor: help;
             opacity: 0.8;
             transition: opacity 0.2s ease, transform 0.2s ease;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .pest-icon:hover {
@@ -461,13 +465,91 @@
             transform: scale(1.15);
         }
         
+        /* Touch-friendly tooltip */
+        .pest-icon.show-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            pointer-events: none;
+            max-width: 300px;
+            white-space: normal;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .pest-icon.show-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            margin-bottom: -6px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        /* Also style companion tags for touch */
+        .companion-tag {
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .companion-tag.show-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            pointer-events: none;
+            max-width: 300px;
+            white-space: normal;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .companion-tag.show-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            margin-bottom: -6px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
         .nutrition-badge {
+            display: inline-flex;
+            align-items: center;
             padding: 0.15rem 0.5rem;
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            line-height: 1;
         }
         
         .nutrition-high {
@@ -490,6 +572,182 @@
             font-style: italic;
             text-align: center;
             padding: 2rem 0;
+            cursor: pointer;
+        }
+        
+        /* Tab Navigation */
+        .tab-container {
+            background: var(--cream);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(58, 47, 40, 0.08);
+            border: 2px solid rgba(74, 124, 89, 0.2);
+            overflow: hidden;
+            transform: translateZ(0);
+            will-change: auto;
+        }
+        
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 0;
+        }
+        
+        .tab-nav::-webkit-scrollbar {
+            height: 3px;
+        }
+        
+        .tab-nav::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 3px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 0, 0, 0.03);
+            color: var(--soil-medium);
+            border: none;
+            border-top: 4px solid transparent;
+            border-radius: 0;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-btn.active {
+            background: var(--cream);
+            color: var(--soil-dark);
+            font-weight: 600;
+            border-top: 4px solid var(--leaf-green);
+            border-radius: 8px 8px 0 0;
+            padding-top: calc(0.75rem - 4px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Easy Layout Styles */
+        .plant-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .plant-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border: 2px solid var(--sage);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .plant-checkbox:hover {
+            border-color: var(--leaf-green);
+            background: var(--cream);
+        }
+        
+        .plant-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .plant-checkbox.checked {
+            border-color: var(--leaf-green);
+            background: var(--leaf-light);
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .mode-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--sage);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .mode-option:hover {
+            border-color: var(--leaf-green);
+        }
+        
+        .mode-option.selected {
+            border-color: var(--leaf-green);
+            background: var(--leaf-light);
+        }
+        
+        .mode-option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        
+        .optimization-result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--cream);
+            border-radius: 8px;
+            border-left: 4px solid var(--leaf-green);
+        }
+        
+        .result-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--leaf-green);
+            margin-bottom: 1rem;
+        }
+        
+        .proposed-bed {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid var(--sage);
+        }
+        
+        .bed-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .bed-comparison-arrow {
+            font-size: 1.5rem;
+            color: var(--leaf-green);
+        }
+        
+        .bed-reasons {
+            font-size: 0.85rem;
+            color: var(--soil-medium);
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+        }
+        
+        .bed-reasons li {
+            margin-bottom: 0.25rem;
         }
         
         .modal {
@@ -691,6 +949,63 @@
                 align-items: flex-start;
                 gap: 0.5rem;
             }
+            
+            /* Tabs & Optimizer mobile */
+            .tab-btn {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.7rem;
+                border-top-width: 3px;
+            }
+            
+            .plant-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .plant-checkbox {
+                padding: 0.35rem 0.25rem;
+                font-size: 0.75rem;
+            }
+            
+            .optimization-result {
+                padding: 1rem;
+            }
+            
+            .result-score {
+                font-size: 1.1rem;
+            }
+            
+            .proposed-bed {
+                font-size: 0.8rem;
+            }
+            
+            .wishlist-input {
+                flex-direction: column;
+            }
+            
+            /* Buttons volle Breite */
+            .btn {
+                width: 100%;
+                white-space: normal;
+                min-height: 44px;
+            }
+            
+            /* Tabs scrollbar schmaler */
+            .tab-nav {
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+            
+            /* Panel ohne overflow */
+            .panel {
+                overflow-x: hidden;
+            }
+            
+            /* Inputs volle Breite */
+            input[type="text"],
+            select {
+                max-width: 100%;
+                box-sizing: border-box;
+            }
         }
         
         .suggestion-box {
@@ -780,6 +1095,10 @@
                 grid-template-columns: 1fr;
             }
             
+            .tab-container > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+            
             h1 {
                 font-size: 2.5rem;
             }
@@ -787,17 +1106,73 @@
             .garden-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .tab-nav {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 0.25rem 0.25rem 0 0.25rem;
+            }
+            
+            .tab-btn {
+                font-size: 0.9rem;
+                padding: 0.6rem 1.2rem;
+            }
+            
+            .panel {
+                padding: 1rem;
+            }
+            
+            .plant-selector {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+            
+            .mode-selector {
+                flex-direction: column;
+            }
+            
+            .bed-comparison {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .bed-comparison-arrow {
+                transform: rotate(90deg);
+                margin: 0.5rem 0;
+            }
         }
         
         /* iPhone and small smartphones */
         @media (max-width: 480px) {
+            /* Performance: Disable expensive animations on mobile */
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+            
+            .tab-container {
+                box-shadow: 0 2px 10px rgba(58, 47, 40, 0.06);
+            }
+            
             body {
                 font-size: 0.95rem;
             }
             
             .container {
-                padding: 1rem;
+                padding: 0.5rem;
                 max-width: 100%;
+                overflow-x: hidden;
+            }
+            
+            .tab-container {
+                margin: 0;
+            }
+            
+            .tab-nav {
+                padding: 0.25rem 0.25rem 0 0.25rem;
+            }
+            
+            .panel {
+                padding: 1rem 0.75rem;
             }
             
             h1 {
@@ -810,7 +1185,7 @@
             }
             
             .panel {
-                padding: 1rem;
+                padding: 0.75rem;
                 border-radius: 8px;
             }
             
@@ -1090,6 +1465,18 @@
         </header>
         
         <div class="main-grid">
+            <!-- Unified Tab Container -->
+            <div class="tab-container" style="grid-column: 1 / -1;">
+                <!-- Tab Navigation -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="app.switchTab('garden')" data-i18n="tab.manual">🏡 Manual Planning</button>
+                    <button class="tab-btn" onclick="app.switchTab('optimizer')" data-i18n="tab.optimizer">🧮 Easy Layout</button>
+                </div>
+                
+                <!-- Tab Content Area -->
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                    <!-- Tab: Manual Garden Planning -->
+                    <div id="tab-garden" class="tab-content active" style="display: contents;">
             <!-- Left Panel: Controls -->
             <div>
                 <div class="panel">
@@ -1101,7 +1488,8 @@
                         <button onclick="app.changeYear(1)">→</button>
                     </div>
                     
-                    <div class="wishlist-section">
+                    <!-- Wishlist Section -->
+                    <div class="wishlist-section" style="margin-top: 1.5rem;">
                         <h3 style="margin-bottom: 1rem; color: var(--soil-dark);" data-i18n="wishlist.title">Your Wishlist</h3>
                         <div class="wishlist-input">
                             <select id="vegetableSelect">
@@ -1120,7 +1508,17 @@
                         <div id="suggestionsBox"></div>
                     </div>
                     
-                    <div style="margin-top: 2rem;">
+                    <!-- Year Rotation Wizard -->
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--sage);">
+                        <button class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem;" onclick="app.showRotationWizard()">
+                            <span data-i18n="wizard.rotate">🔄 Rotate Last Year's Plan</span>
+                        </button>
+                        <p style="font-size: 0.8rem; color: var(--soil-medium); font-style: italic;" data-i18n="wizard.hint">
+                            Suggests optimal bed rotation based on last year's planting
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
                         <button class="btn btn-secondary" style="width: 100%;" onclick="app.addBed()">
                             <span data-i18n="bed.add">+ Add Garden Bed</span>
                         </button>
@@ -1167,6 +1565,34 @@
                                 <span style="font-size: 1.2rem;">🐞</span>
                                 <span data-i18n="legend.beneficials">Attracts beneficial insects</span>
                             </div>
+                            <div class="legend-item">
+                                <span class="nutrition-badge nutrition-high" style="min-width: 4rem; font-size: 0.85rem; padding: 0.35rem 0.6rem;" data-i18n="nutrition.high">High</span>
+                                <span data-i18n="legend.highNutrition">High nutrient demand (heavy feeder)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="nutrition-badge nutrition-medium" style="min-width: 4rem; font-size: 0.85rem; padding: 0.35rem 0.6rem;" data-i18n="nutrition.medium">Medium</span>
+                                <span data-i18n="legend.mediumNutrition">Medium nutrient demand</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="nutrition-badge nutrition-low" style="min-width: 4rem; font-size: 0.85rem; padding: 0.35rem 0.6rem;" data-i18n="nutrition.low">Low</span>
+                                <span data-i18n="legend.lowNutrition">Low nutrient demand (light feeder)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span style="font-size: 1.2rem;">🐌</span>
+                                <span data-i18n="legend.slugVulnerable">Vulnerable to slugs/snails</span>
+                            </div>
+                            <div class="legend-item">
+                                <span style="font-size: 1.2rem;">🦟</span>
+                                <span data-i18n="legend.flyingVulnerable">Vulnerable to flying pests</span>
+                            </div>
+                            <div class="legend-item">
+                                <span style="font-size: 1.2rem;">🐛</span>
+                                <span data-i18n="legend.larvaeVulnerable">Vulnerable to larvae/caterpillars</span>
+                            </div>
+                            <div class="legend-item">
+                                <span style="font-size: 1.2rem;">🪲</span>
+                                <span data-i18n="legend.beetleVulnerable">Vulnerable to beetles</span>
+                            </div>
                             <div class="legend-item legend-info">
                                 <span style="font-size: 0.9rem; color: var(--soil-medium); font-style: italic;" data-i18n="legend.hoverInfo">Detailed information available by hovering over symbols</span>
                             </div>
@@ -1176,8 +1602,88 @@
                 
                 <div class="garden-grid" id="gardenGrid"></div>
             </div>
-        </div>
-    </div>
+            </div>
+            <!-- End Tab: Garden -->
+            
+            <!-- Tab: Optimizer -->
+            <div id="tab-optimizer" class="tab-content" style="grid-column: 1 / -1;">
+                <div class="panel">
+                    <h2>🧮 <span data-i18n="optimizer.title">Easy Layout Optimizer</span></h2>
+                    <p data-i18n="optimizer.description">Select plants and let the algorithm find the optimal garden layout for you.</p>
+                    
+                    <!-- Step 1: Plant Selection -->
+                    <div style="margin-top: 2rem;">
+                        <h3>🌱 <span data-i18n="optimizer.selectPlants">Select Plants</span> (<span id="selectedCount">0</span>)</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" id="plantSearch" placeholder="Search plants..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--sage); border-radius: 4px;">
+                        </div>
+                        <div class="plant-selector" id="plantSelector"></div>
+                    </div>
+                    
+                    <!-- Step 2: Mode & Constraints -->
+                    <div style="margin-top: 2rem;">
+                        <h3>⚙️ <span data-i18n="optimizer.configuration">Configuration</span></h3>
+                        
+                        <div class="mode-selector">
+                            <label class="mode-option selected" id="mode-fresh">
+                                <input type="radio" name="optimizerMode" value="fresh" checked onchange="app.setOptimizerMode('fresh')">
+                                <div>
+                                    <strong data-i18n="optimizer.modeFresh">🆕 Fresh Garden Plan</strong>
+                                    <div style="font-size: 0.85rem; color: var(--soil-medium); margin-top: 0.25rem;" data-i18n="optimizer.modeFreshDesc">
+                                        Start from scratch, ignore current layout
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="mode-option" id="mode-fit">
+                                <input type="radio" name="optimizerMode" value="fit" onchange="app.setOptimizerMode('fit')">
+                                <div>
+                                    <strong data-i18n="optimizer.modeFit">🔄 Fit to Current Garden</strong>
+                                    <div style="font-size: 0.85rem; color: var(--soil-medium); margin-top: 0.25rem;" data-i18n="optimizer.modeFitDesc">
+                                        Respect bed count and crop rotation history
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <div>
+                                <label data-i18n="optimizer.plantsPerBed">Plants per bed:</label>
+                                <select id="maxPlantsPerBed" style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4" selected>4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label data-i18n="optimizer.numBeds">Number of beds:</label>
+                                <select id="numBeds" style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+                                    <option value="auto" selected data-i18n="optimizer.auto">Auto-calculate</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="app.runOptimizer()" style="margin-top: 1.5rem; width: 100%;">
+                            <span data-i18n="optimizer.calculate">🎲 Calculate Optimal Layout</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Step 3: Results (hidden initially) -->
+                    <div id="optimizerResults" style="display: none;"></div>
+                </div>
+            </div>
+            <!-- End Tab: Optimizer -->
+            
+            </div><!-- End tab content area grid -->
+        </div><!-- End tab-container -->
+    </div><!-- End main-grid -->
     
     <!-- Modal for Bed Assignment -->
     <div class="modal" id="bedModal">
@@ -1280,13 +1786,20 @@
                 "legend.pestProtection": "Protects from pests",
                 "legend.sharedPests": "Shares pest vulnerabilities",
                 "legend.beneficials": "Attracts beneficial insects",
-                "legend.hoverInfo": "Detailed information available by hovering over symbols",
+                "legend.highNutrition": "High nutrient demand (heavy feeder)",
+                "legend.mediumNutrition": "Medium nutrient demand",
+                "legend.lowNutrition": "Low nutrient demand (light feeder)",
+                "legend.slugVulnerable": "Vulnerable to slugs/snails",
+                "legend.flyingVulnerable": "Vulnerable to flying pests (aphids, flies, moths)",
+                "legend.larvaeVulnerable": "Vulnerable to larvae/caterpillars",
+                "legend.beetleVulnerable": "Vulnerable to beetles",
+                "legend.hoverInfo": "Tap on symbols for detailed information",
                 "tooltip.beneficials": "Attracts beneficial insects: Ladybugs, Lacewings, Parasitic Wasps, Pollinators",
                 "tooltip.traditionalCompanion": "Traditional good companion",
                 "tooltip.protectsFrom": "Protects from",
                 "tooltip.incompatible": "Incompatible: competes for nutrients or inhibits growth",
                 "tooltip.slugs": "Slugs/Snails",
-                "tooltip.flying": "Flying pests (aphids, flies, moths)",
+                "tooltip.flying": "Flying pests",
                 "tooltip.larvae": "Larvae/Caterpillars",
                 "tooltip.beetles": "Beetles",
                 "data.clearAll": "Clear All Data",
@@ -1317,7 +1830,55 @@
                 "pest.flea-beetle": "flea beetle",
                 "pest.squash-bug": "squash bug",
                 "pest.spider-mites": "spider mites",
-                "pest.leaf-miners": "leaf miners"
+                "pest.leaf-miners": "leaf miners",
+                "tab.manual": "🏡 Manual Planning",
+                "tab.optimizer": "🧮 Easy Layout",
+                "wizard.rotate": "🔄 Rotate Last Year's Plan",
+                "wizard.hint": "Suggests optimal bed rotation based on last year's planting",
+                "wizard.title": "Year Rotation Wizard",
+                "wizard.noPrevious": "No plantings found from previous year",
+                "wizard.sameYear": "Already viewing current calendar year",
+                "wizard.copyBeds": "Copy beds from last year?",
+                "wizard.copyBedsDesc": "This will create the same number of beds and suggest optimal rotation",
+                "wizard.apply": "Apply Rotation",
+                "wizard.cancel": "Cancel",
+                "wizard.applied": "Rotation applied successfully!",
+                "optimizer.title": "Easy Layout Optimizer",
+                "optimizer.description": "Select plants and let the algorithm find the optimal garden layout for you.",
+                "optimizer.selectPlants": "Select Plants",
+                "optimizer.configuration": "Configuration",
+                "optimizer.modeFresh": "🆕 Fresh Garden Plan",
+                "optimizer.modeFreshDesc": "Start from scratch, ignore current layout",
+                "optimizer.modeFit": "🔄 Fit to Current Garden",
+                "optimizer.modeFitDesc": "Respect bed count and crop rotation history",
+                "optimizer.plantsPerBed": "Plants per bed:",
+                "optimizer.numBeds": "Number of beds:",
+                "optimizer.auto": "Auto-calculate",
+                "optimizer.calculate": "🎲 Calculate Optimal Layout",
+                "optimizer.score": "Score:",
+                "optimizer.excellent": "Excellent",
+                "optimizer.veryGood": "Very Good",
+                "optimizer.good": "Good",
+                "optimizer.fair": "Fair",
+                "optimizer.poor": "Poor",
+                "optimizer.results": "Optimization Results",
+                "optimizer.bed": "Bed",
+                "optimizer.was": "Was:",
+                "optimizer.now": "Now:",
+                "optimizer.reasons": "Reasons:",
+                "optimizer.summary": "Summary:",
+                "optimizer.apply": "✓ Apply Layout",
+                "optimizer.newCalc": "🔄 New Calculation",
+                "optimizer.noSelection": "Please select at least 3 plants",
+                "optimizer.applyConfirm": "Apply this layout? This will clear current year plantings and apply the optimized layout.",
+                "optimizer.applied": "Layout applied successfully!",
+                "optimizer.unplaced": "Could not place all plants",
+                "optimizer.unplacedPlants": "Not placed",
+                "optimizer.improvements": "💡 How to improve",
+                "optimizer.improveBeds": "Increase number of beds",
+                "optimizer.improvePlantsPerBed": "Increase plants per bed",
+                "optimizer.improveRemovePlants": "Remove some plants from selection",
+                "optimizer.improveRotation": "Adjust crop rotation constraints (Fit mode)"
             },
             de: {
                 title: "Beet Anything",
@@ -1392,13 +1953,20 @@
                 "legend.pestProtection": "Schützt vor Schädlingen",
                 "legend.sharedPests": "Teilt Schädlingsanfälligkeit",
                 "legend.beneficials": "Lockt Nützlinge an",
-                "legend.hoverInfo": "Detailinformationen sind durch Berühren der jeweiligen Symbole verfügbar",
+                "legend.highNutrition": "Hoher Nährstoffbedarf (Starkzehrer)",
+                "legend.mediumNutrition": "Mittlerer Nährstoffbedarf (Mittelzehrer)",
+                "legend.lowNutrition": "Niedriger Nährstoffbedarf (Schwachzehrer)",
+                "legend.slugVulnerable": "Anfällig für Schnecken",
+                "legend.flyingVulnerable": "Anfällig für fliegende Schädlinge (Blattläuse, Fliegen, Motten)",
+                "legend.larvaeVulnerable": "Anfällig für Larven/Raupen",
+                "legend.beetleVulnerable": "Anfällig für Käfer",
+                "legend.hoverInfo": "Detailinformationen durch Tippen auf Symbole verfügbar",
                 "tooltip.beneficials": "Lockt Nützlinge an: Marienkäfer, Florfliegen, Schlupfwespen, Bestäuber",
                 "tooltip.traditionalCompanion": "Traditionell gute Begleitpflanze",
                 "tooltip.protectsFrom": "Schützt vor",
                 "tooltip.incompatible": "Unverträglich: Konkurriert um Nährstoffe oder hemmt Wachstum",
                 "tooltip.slugs": "Schnecken",
-                "tooltip.flying": "Fliegende Schädlinge (Blattläuse, Fliegen, Motten)",
+                "tooltip.flying": "Fliegende Schädlinge",
                 "tooltip.larvae": "Larven/Raupen",
                 "tooltip.beetles": "Käfer",
                 "data.clearAll": "Alle Daten löschen",
@@ -1429,7 +1997,55 @@
                 "pest.flea-beetle": "Erdfloh",
                 "pest.squash-bug": "Kürbis-Wanze",
                 "pest.spider-mites": "Spinnmilben",
-                "pest.leaf-miners": "Minierfliegen"
+                "pest.leaf-miners": "Minierfliegen",
+                "tab.manual": "🏡 Manuelle Planung",
+                "tab.optimizer": "🧮 Easy Layout",
+                "wizard.rotate": "🔄 Vorjahresplan rotieren",
+                "wizard.hint": "Schlägt optimale Beetrotation basierend auf Vorjahresbepflanzung vor",
+                "wizard.title": "Jahres-Rotations-Assistent",
+                "wizard.noPrevious": "Keine Bepflanzung vom Vorjahr gefunden",
+                "wizard.sameYear": "Aktuelles Kalenderjahr wird bereits angezeigt",
+                "wizard.copyBeds": "Beete vom Vorjahr übernehmen?",
+                "wizard.copyBedsDesc": "Dies erstellt dieselbe Anzahl Beete und schlägt optimale Rotation vor",
+                "wizard.apply": "Rotation anwenden",
+                "wizard.cancel": "Abbrechen",
+                "wizard.applied": "Rotation erfolgreich angewendet!",
+                "optimizer.title": "Easy Layout Optimierer",
+                "optimizer.description": "Wählen Sie Pflanzen aus und lassen Sie den Algorithmus das optimale Gartenlayout finden.",
+                "optimizer.selectPlants": "Pflanzen auswählen",
+                "optimizer.configuration": "Konfiguration",
+                "optimizer.modeFresh": "🆕 Neuer Gartenplan",
+                "optimizer.modeFreshDesc": "Von Grund auf neu, ignoriert aktuelles Layout",
+                "optimizer.modeFit": "🔄 An aktuellen Garten anpassen",
+                "optimizer.modeFitDesc": "Berücksichtigt Beetanzahl und Fruchtfolge-Historie",
+                "optimizer.plantsPerBed": "Pflanzen pro Beet:",
+                "optimizer.numBeds": "Anzahl Beete:",
+                "optimizer.auto": "Automatisch berechnen",
+                "optimizer.calculate": "🎲 Optimales Layout berechnen",
+                "optimizer.score": "Bewertung:",
+                "optimizer.excellent": "Ausgezeichnet",
+                "optimizer.veryGood": "Sehr gut",
+                "optimizer.good": "Gut",
+                "optimizer.fair": "Ausreichend",
+                "optimizer.poor": "Schlecht",
+                "optimizer.results": "Optimierungsergebnisse",
+                "optimizer.bed": "Beet",
+                "optimizer.was": "War:",
+                "optimizer.now": "Jetzt:",
+                "optimizer.reasons": "Gründe:",
+                "optimizer.summary": "Zusammenfassung:",
+                "optimizer.apply": "✓ Layout übernehmen",
+                "optimizer.newCalc": "🔄 Neue Berechnung",
+                "optimizer.noSelection": "Bitte wählen Sie mindestens 3 Pflanzen aus",
+                "optimizer.applyConfirm": "Dieses Layout übernehmen? Dies löscht die Bepflanzung des aktuellen Jahres und wendet das optimierte Layout an.",
+                "optimizer.applied": "Layout erfolgreich übernommen!",
+                "optimizer.unplaced": "Nicht alle Pflanzen konnten platziert werden",
+                "optimizer.unplacedPlants": "Nicht platziert",
+                "optimizer.improvements": "💡 Verbesserungsmöglichkeiten",
+                "optimizer.improveBeds": "Anzahl der Beete erhöhen",
+                "optimizer.improvePlantsPerBed": "Pflanzen pro Beet erhöhen",
+                "optimizer.improveRemovePlants": "Einige Pflanzen aus Auswahl entfernen",
+                "optimizer.improveRotation": "Fruchtfolge-Einschränkungen anpassen (Fit-Modus)"
             },
             it: {
                 title: "Beet Anything",
@@ -1504,13 +2120,20 @@
                 "legend.pestProtection": "Protegge dai parassiti",
                 "legend.sharedPests": "Condivide vulnerabilità ai parassiti",
                 "legend.beneficials": "Attrae insetti utili",
-                "legend.hoverInfo": "Informazioni dettagliate disponibili passando il mouse sui simboli",
+                "legend.highNutrition": "Alto fabbisogno di nutrienti (alimentatore pesante)",
+                "legend.mediumNutrition": "Medio fabbisogno di nutrienti",
+                "legend.lowNutrition": "Basso fabbisogno di nutrienti (alimentatore leggero)",
+                "legend.slugVulnerable": "Vulnerabile a lumache",
+                "legend.flyingVulnerable": "Vulnerabile a parassiti volanti (afidi, mosche, falene)",
+                "legend.larvaeVulnerable": "Vulnerabile a larve/bruchi",
+                "legend.beetleVulnerable": "Vulnerabile a coleotteri",
+                "legend.hoverInfo": "Informazioni dettagliate toccando i simboli",
                 "tooltip.beneficials": "Attrae insetti utili: Coccinelle, Crisope, Vespe parassite, Impollinatori",
                 "tooltip.traditionalCompanion": "Tradizionalmente buona pianta compagna",
                 "tooltip.protectsFrom": "Protegge da",
                 "tooltip.incompatible": "Incompatibile: compete per nutrienti o inibisce la crescita",
                 "tooltip.slugs": "Lumache",
-                "tooltip.flying": "Parassiti volanti (afidi, mosche, falene)",
+                "tooltip.flying": "Parassiti volanti",
                 "tooltip.larvae": "Larve/Bruchi",
                 "tooltip.beetles": "Coleotteri",
                 "data.clearAll": "Cancella tutti i dati",
@@ -1541,7 +2164,55 @@
                 "pest.flea-beetle": "altica",
                 "pest.squash-bug": "cimice della zucca",
                 "pest.spider-mites": "ragnetto rosso",
-                "pest.leaf-miners": "minatrice"
+                "pest.leaf-miners": "minatrice",
+                "tab.manual": "🏡 Pianificazione manuale",
+                "tab.optimizer": "🧮 Easy Layout",
+                "wizard.rotate": "🔄 Ruota piano anno scorso",
+                "wizard.hint": "Suggerisce rotazione ottimale basata sulla piantagione dell'anno scorso",
+                "wizard.title": "Assistente Rotazione Annuale",
+                "wizard.noPrevious": "Nessuna piantagione trovata dall'anno scorso",
+                "wizard.sameYear": "Anno corrente già visualizzato",
+                "wizard.copyBeds": "Copiare aiuole dall'anno scorso?",
+                "wizard.copyBedsDesc": "Questo creerà lo stesso numero di aiuole e suggerirà la rotazione ottimale",
+                "wizard.apply": "Applica rotazione",
+                "wizard.cancel": "Annulla",
+                "wizard.applied": "Rotazione applicata con successo!",
+                "optimizer.title": "Ottimizzatore Easy Layout",
+                "optimizer.description": "Seleziona le piante e lascia che l'algoritmo trovi il layout ottimale del giardino.",
+                "optimizer.selectPlants": "Seleziona piante",
+                "optimizer.configuration": "Configurazione",
+                "optimizer.modeFresh": "🆕 Nuovo piano giardino",
+                "optimizer.modeFreshDesc": "Ricomincia da zero, ignora il layout attuale",
+                "optimizer.modeFit": "🔄 Adatta al giardino attuale",
+                "optimizer.modeFitDesc": "Rispetta il numero di aiuole e la storia della rotazione",
+                "optimizer.plantsPerBed": "Piante per aiuola:",
+                "optimizer.numBeds": "Numero di aiuole:",
+                "optimizer.auto": "Calcola automaticamente",
+                "optimizer.calculate": "🎲 Calcola layout ottimale",
+                "optimizer.score": "Punteggio:",
+                "optimizer.excellent": "Eccellente",
+                "optimizer.veryGood": "Molto buono",
+                "optimizer.good": "Buono",
+                "optimizer.fair": "Sufficiente",
+                "optimizer.poor": "Scarso",
+                "optimizer.results": "Risultati ottimizzazione",
+                "optimizer.bed": "Aiuola",
+                "optimizer.was": "Era:",
+                "optimizer.now": "Ora:",
+                "optimizer.reasons": "Motivi:",
+                "optimizer.summary": "Riepilogo:",
+                "optimizer.apply": "✓ Applica layout",
+                "optimizer.newCalc": "🔄 Nuovo calcolo",
+                "optimizer.noSelection": "Seleziona almeno 3 piante",
+                "optimizer.applyConfirm": "Applicare questo layout? Questo cancellerà le piantagioni dell'anno corrente e applicherà il layout ottimizzato.",
+                "optimizer.applied": "Layout applicato con successo!",
+                "optimizer.unplaced": "Impossibile posizionare tutte le piante",
+                "optimizer.unplacedPlants": "Non posizionato",
+                "optimizer.improvements": "💡 Come migliorare",
+                "optimizer.improveBeds": "Aumentare il numero di aiuole",
+                "optimizer.improvePlantsPerBed": "Aumentare piante per aiuola",
+                "optimizer.improveRemovePlants": "Rimuovere alcune piante dalla selezione",
+                "optimizer.improveRotation": "Regolare vincoli di rotazione (modalità Fit)"
             }
         };
         
@@ -1929,6 +2600,31 @@
                         protectsAgainst: ['aphids', 'slugs'],
                         attractsBeneficials: true
                     }),
+                    new Vegetable('chili', 'Chili Pepper', 'Chili', 'Peperoncino', 'high', 'Solanaceae', {
+                        susceptibleTo: ['aphids', 'whitefly', 'spider-mites'],
+                        protectsAgainst: ['aphids', 'beetles', 'slugs'],
+                        attractsBeneficials: false
+                    }),
+                    new Vegetable('parsnip', 'Parsnip', 'Pastinake', 'Pastinaca', 'low', 'Apiaceae', {
+                        susceptibleTo: ['carrot-fly', 'aphids', 'slugs'],
+                        protectsAgainst: [],
+                        attractsBeneficials: false
+                    }),
+                    new Vegetable('rosemary', 'Rosemary', 'Rosmarin', 'Rosmarino', 'low', 'Lamiaceae', {
+                        susceptibleTo: ['spider-mites'],
+                        protectsAgainst: ['cabbage-white', 'carrot-fly', 'bean-beetle', 'slugs'],
+                        attractsBeneficials: true
+                    }),
+                    new Vegetable('oregano', 'Oregano', 'Oregano', 'Origano', 'low', 'Lamiaceae', {
+                        susceptibleTo: ['aphids', 'spider-mites'],
+                        protectsAgainst: ['aphids', 'cabbage-white', 'cucumber-beetle'],
+                        attractsBeneficials: true
+                    }),
+                    new Vegetable('sage', 'Sage', 'Salbei', 'Salvia', 'low', 'Lamiaceae', {
+                        susceptibleTo: ['slugs', 'spider-mites'],
+                        protectsAgainst: ['cabbage-white', 'carrot-fly', 'slugs', 'flea-beetle'],
+                        attractsBeneficials: true
+                    }),
                 ];
                 
                 veggies.forEach(v => this.vegetables.set(v.id, v));
@@ -1966,6 +2662,13 @@
                 this.setCompanions('rhubarb', ['beans', 'cabbage', 'onion'], []);
                 this.setCompanions('eggplant', ['beans', 'pepper', 'spinach'], ['potato', 'fennel']);
                 this.setCompanions('fennel', ['celery'], ['tomato', 'beans', 'kohlrabi', 'eggplant']);
+                
+                // Newest additions (2025)
+                this.setCompanions('chili', ['basil', 'oregano', 'onion', 'carrot'], ['beans', 'kohlrabi']);
+                this.setCompanions('parsnip', ['onion', 'lettuce', 'rosemary', 'sage'], ['carrot', 'celery', 'parsley']);
+                this.setCompanions('rosemary', ['cabbage', 'beans', 'carrot', 'sage', 'parsnip'], ['cucumber', 'potato']);
+                this.setCompanions('oregano', ['cabbage', 'cucumber', 'beans', 'chili'], ['fennel']);
+                this.setCompanions('sage', ['cabbage', 'carrot', 'rosemary', 'parsnip', 'tomato'], ['cucumber', 'onion']);
             }
             
             setCompanions(vegId, good, bad) {
@@ -2259,6 +2962,14 @@
             currentYear: 2024,
             wishlist: [],
             currentLanguage: 'en',
+            optimizer: {
+                selectedPlants: [],
+                mode: 'fresh',
+                maxPlantsPerBed: 4,
+                numBeds: 'auto',
+                proposedLayout: null,
+                score: null
+            },
             
             init() {
                 // Try to load saved data
@@ -2354,9 +3065,9 @@
             
             populateVegetableSelect() {
                 const select = document.getElementById('vegetableSelect');
-                const currentValue = select.value;
+                if (!select) return;
                 
-                // Clear and re-populate
+                const currentValue = select.value;
                 select.innerHTML = `<option value="">${this.t('wishlist.select')}</option>`;
                 
                 const sortedVeggies = Array.from(this.garden.vegetables.values())
@@ -2369,10 +3080,7 @@
                     select.appendChild(option);
                 });
                 
-                // Restore selection if it was set
-                if (currentValue) {
-                    select.value = currentValue;
-                }
+                if (currentValue) select.value = currentValue;
             },
             
             changeYear(delta) {
@@ -2385,6 +3093,8 @@
             
             addToWishlist() {
                 const select = document.getElementById('vegetableSelect');
+                if (!select) return;
+                
                 const vegId = select.value;
                 if (vegId && !this.wishlist.includes(vegId)) {
                     this.wishlist.push(vegId);
@@ -2392,6 +3102,118 @@
                     this.save();
                     this.renderWishlist();
                 }
+            },
+            
+            // ===== ROTATION WIZARD =====
+            showRotationWizard() {
+                const currentCalendarYear = new Date().getFullYear();
+                
+                if (this.currentYear === currentCalendarYear) {
+                    alert(this.t('wizard.sameYear'));
+                    return;
+                }
+                
+                const previousYear = this.currentYear - 1;
+                const prevPlants = new Set();
+                
+                this.garden.beds.forEach(bed => {
+                    const plantings = this.garden.getPlantingsForBed(bed.id, previousYear);
+                    plantings.forEach(p => prevPlants.add(p.id));
+                });
+                
+                if (prevPlants.size === 0) {
+                    alert(this.t('wizard.noPrevious'));
+                    return;
+                }
+                
+                this.optimizer.selectedPlants = Array.from(prevPlants);
+                this.optimizer.mode = 'fit';
+                this.optimizer.maxPlantsPerBed = 4;
+                this.optimizer.numBeds = this.garden.beds.size;
+                
+                const result = this.optimizeLayout();
+                this.displayRotationWizardResults(result, previousYear);
+            },
+            
+            displayRotationWizardResults(result, previousYear) {
+                const scorePercent = Math.max(0, Math.min(100, 50 + result.score));
+                let scoreLabel = this.t('optimizer.poor');
+                if (scorePercent >= 80) scoreLabel = this.t('optimizer.excellent');
+                else if (scorePercent >= 70) scoreLabel = this.t('optimizer.veryGood');
+                else if (scorePercent >= 60) scoreLabel = this.t('optimizer.good');
+                else if (scorePercent >= 50) scoreLabel = this.t('optimizer.fair');
+                
+                let html = `
+                    <div class="optimization-result">
+                        <h3>${this.t('wizard.title')}</h3>
+                        <div class="result-score">
+                            ${this.t('optimizer.score')} ${Math.round(scorePercent)}/100 (${scoreLabel})
+                        </div>
+                `;
+                
+                result.beds.forEach((bed, idx) => {
+                    const bedNum = idx + 1;
+                    const bedName = `${this.t('optimizer.bed')} ${bedNum}`;
+                    
+                    let wasPlants = '';
+                    if (this.garden.beds.has(bedNum)) {
+                        const prevPlants = this.garden.getPlantingsForBed(bedNum, previousYear);
+                        wasPlants = prevPlants.map(p => p.getName(this.currentLanguage)).join(', ') || this.t('bed.empty');
+                    }
+                    
+                    const nowPlants = bed.map(p => p.getName(this.currentLanguage)).join(', ');
+                    
+                    html += `
+                        <div class="proposed-bed">
+                            <strong>${bedName}</strong>
+                            <div class="bed-comparison">
+                                <div><small>${previousYear}:</small> ${wasPlants}</div>
+                                <div class="bed-comparison-arrow">→</div>
+                                <div><small>${this.currentYear}:</small> ${nowPlants}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button class="btn btn-primary" onclick="app.applyRotationWizard()" style="width: 100%;">
+                                ${this.t('wizard.apply')}
+                            </button>
+                            <button class="btn btn-secondary" onclick="app.closeRotationWizard()" style="width: 100%;">
+                                ${this.t('wizard.cancel')}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('suggestionsBox').innerHTML = html;
+                this.rotationWizardResult = result.beds;
+            },
+            
+            applyRotationWizard() {
+                if (!this.rotationWizardResult) return;
+                
+                this.garden.plantings = this.garden.plantings.filter(p => p.year !== this.currentYear);
+                this.garden.beds.clear();
+                
+                this.rotationWizardResult.forEach((bed, idx) => {
+                    const newBed = this.garden.addBed();
+                    bed.forEach(plant => {
+                        this.garden.assignToBed(plant.id, newBed.id, this.currentYear);
+                    });
+                });
+                
+                this.save();
+                this.render();
+                
+                alert(this.t('wizard.applied'));
+                this.closeRotationWizard();
+            },
+            
+            closeRotationWizard() {
+                document.getElementById('suggestionsBox').innerHTML = '';
+                this.rotationWizardResult = null;
             },
             
             removeFromWishlist(vegId) {
@@ -2774,7 +3596,7 @@
                     
                     let content = '';
                     if (currentPlantings.length === 0) {
-                        content = `<div class="empty-bed">${this.t('bed.empty')}</div>`;
+                        content = `<div class="empty-bed" onclick="app.openBedModal(${bed.id})">${this.t('bed.empty')}</div>`;
                     } else {
                         content = currentPlantings.map(veg => {
                             const currentIds = currentPlantings.map(v => v.id);
@@ -2810,8 +3632,7 @@
                                             const pestsByCategory = veg.getPestsByCategory();
                                             
                                             if (pestIcons.slugs) {
-                                                const translatedPests = pestsByCategory.slugs.map(p => this.t(`pest.${p}`)).join(', ');
-                                                const tooltip = this.t('tooltip.slugs') + ': ' + translatedPests;
+                                                const tooltip = this.t('tooltip.slugs');
                                                 iconsHTML += `<span class="pest-icon" title="${tooltip}">🐌</span>`;
                                             }
                                             if (pestIcons.flying) {
@@ -2895,8 +3716,8 @@
                     }
                     
                     return `
-                        <div class="bed" onclick="app.openBedModal(${bed.id})">
-                            <div class="bed-header">
+                        <div class="bed">
+                            <div class="bed-header" onclick="app.openBedModal(${bed.id})" style="cursor: pointer;">
                                 <div class="bed-name">${bed.getName(this.currentLanguage)}</div>
                                 <div class="bed-actions">
                                     <button onclick="event.stopPropagation(); app.removeBed(${bed.id})" title="Remove bed">🗑️</button>
@@ -2911,11 +3732,431 @@
                 }).join('');
                 
                 this.renderWishlist();
+            },
+            
+            // ===== TAB SYSTEM =====
+            switchTab(tabName) {
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.style.display = 'none';
+                });
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const selectedTab = document.getElementById(`tab-${tabName}`);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                    selectedTab.style.display = (tabName === 'garden') ? 'contents' : 'block';
+                }
+                document.querySelector(`.tab-btn[onclick*="${tabName}"]`)?.classList.add('active');
+                
+                // Initialize optimizer only on first visit
+                if (tabName === 'optimizer' && !this.optimizer.initialized) {
+                    this.initOptimizer();
+                    this.optimizer.initialized = true;
+                }
+            },
+            
+            // ===== OPTIMIZER FUNCTIONS =====
+            initOptimizer() {
+                this.renderPlantSelector();
+                document.getElementById('plantSearch').addEventListener('input', (e) => {
+                    this.filterPlantSelector(e.target.value);
+                });
+            },
+            
+            renderPlantSelector() {
+                const container = document.getElementById('plantSelector');
+                const veggies = Array.from(this.garden.vegetables.values())
+                    .sort((a, b) => a.getName(this.currentLanguage).localeCompare(b.getName(this.currentLanguage)));
+                
+                container.innerHTML = veggies.map(veg => {
+                    const checked = this.optimizer.selectedPlants.includes(veg.id);
+                    return `<label class="plant-checkbox ${checked ? 'checked' : ''}" data-plant="${veg.id}">
+                        <input type="checkbox" ${checked ? 'checked' : ''} onchange="app.togglePlant('${veg.id}')">
+                        <span>${veg.getName(this.currentLanguage)}</span>
+                    </label>`;
+                }).join('');
+                this.updateSelectedCount();
+            },
+            
+            filterPlantSelector(query) {
+                document.querySelectorAll('.plant-checkbox').forEach(label => {
+                    label.style.display = label.textContent.toLowerCase().includes(query.toLowerCase()) ? 'flex' : 'none';
+                });
+            },
+            
+            togglePlant(plantId) {
+                const index = this.optimizer.selectedPlants.indexOf(plantId);
+                if (index > -1) {
+                    this.optimizer.selectedPlants.splice(index, 1);
+                } else {
+                    this.optimizer.selectedPlants.push(plantId);
+                }
+                document.querySelector(`.plant-checkbox[data-plant="${plantId}"]`)?.classList.toggle('checked');
+                this.updateSelectedCount();
+            },
+            
+            updateSelectedCount() {
+                document.getElementById('selectedCount').textContent = this.optimizer.selectedPlants.length;
+            },
+            
+            setOptimizerMode(mode) {
+                this.optimizer.mode = mode;
+                document.getElementById('mode-fresh').classList.toggle('selected', mode === 'fresh');
+                document.getElementById('mode-fit').classList.toggle('selected', mode === 'fit');
+            },
+            
+            runOptimizer() {
+                if (this.optimizer.selectedPlants.length < 3) {
+                    alert(this.t('optimizer.noSelection'));
+                    return;
+                }
+                
+                this.optimizer.maxPlantsPerBed = parseInt(document.getElementById('maxPlantsPerBed').value);
+                const numBedsValue = document.getElementById('numBeds').value;
+                this.optimizer.numBeds = numBedsValue === 'auto' ? null : parseInt(numBedsValue);
+                
+                const result = this.optimizeLayout();
+                this.displayOptimizerResults(result);
             }
+        };
+        
+        // ===== OPTIMIZATION ALGORITHM =====
+        app.optimizeLayout = function() {
+            const plants = this.optimizer.selectedPlants.map(id => this.garden.vegetables.get(id));
+            const mode = this.optimizer.mode;
+            const maxPerBed = this.optimizer.maxPlantsPerBed;
+            
+            let numBeds = this.optimizer.numBeds === 'auto' ? Math.ceil(plants.length / maxPerBed) : this.optimizer.numBeds;
+            if (mode === 'fit') numBeds = Math.max(this.garden.beds.size, numBeds);
+            
+            const forbidden = [];
+            if (mode === 'fit') {
+                const prevYear = this.currentYear - 1;
+                this.garden.beds.forEach(bed => {
+                    this.garden.getPlantingsForBed(bed.id, prevYear).forEach(plant => {
+                        forbidden.push({ bedIndex: bed.id - 1, family: plant.family });
+                    });
+                });
+            }
+            
+            let bestLayout = null;
+            let bestScore = -Infinity;
+            let bestUnplaced = [];
+            
+            for (let i = 0; i < 50; i++) {
+                const shuffled = [...plants].sort(() => Math.random() - 0.5);
+                const result = this.greedyPlacement(shuffled, numBeds, maxPerBed, forbidden);
+                const optimized = this.localOptimization(result.beds);
+                const score = this.evaluateLayout(optimized, forbidden);
+                
+                if (score > bestScore || (score === bestScore && result.unplaced.length < bestUnplaced.length)) {
+                    bestScore = score;
+                    bestLayout = optimized;
+                    bestUnplaced = result.unplaced;
+                }
+            }
+            
+            return { beds: bestLayout, score: bestScore, numBeds, unplaced: bestUnplaced };
+        };
+        
+        app.greedyPlacement = function(plants, numBeds, maxPerBed, forbidden) {
+            const beds = Array.from({ length: numBeds }, () => []);
+            const unplaced = [];
+            
+            plants.forEach(plant => {
+                let bestBed = -1;
+                let bestScore = -Infinity;
+                
+                for (let i = 0; i < numBeds; i++) {
+                    if (beds[i].length >= maxPerBed) continue;
+                    
+                    const isForbidden = forbidden.some(f => f.bedIndex === i && f.family === plant.family);
+                    if (isForbidden) continue;
+                    
+                    beds[i].push(plant);
+                    const score = this.evaluateBed(beds[i]);
+                    beds[i].pop();
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestBed = i;
+                    }
+                }
+                
+                if (bestBed >= 0) {
+                    beds[bestBed].push(plant);
+                } else {
+                    unplaced.push(plant);
+                }
+            });
+            
+            return { beds, unplaced };
+        };
+        
+        app.localOptimization = function(beds) {
+            let improved = true;
+            let iterations = 0;
+            
+            while (improved && iterations < 20) {
+                improved = false;
+                iterations++;
+                
+                for (let i = 0; i < beds.length; i++) {
+                    for (let j = i + 1; j < beds.length; j++) {
+                        for (let pi = 0; pi < beds[i].length; pi++) {
+                            for (let pj = 0; pj < beds[j].length; pj++) {
+                                const currentScore = this.evaluateBed(beds[i]) + this.evaluateBed(beds[j]);
+                                
+                                [beds[i][pi], beds[j][pj]] = [beds[j][pj], beds[i][pi]];
+                                const newScore = this.evaluateBed(beds[i]) + this.evaluateBed(beds[j]);
+                                
+                                if (newScore > currentScore) {
+                                    improved = true;
+                                } else {
+                                    [beds[i][pi], beds[j][pj]] = [beds[j][pj], beds[i][pi]];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return beds;
+        };
+        
+        app.evaluateBed = function(plants) {
+            let score = 0;
+            
+            for (let i = 0; i < plants.length; i++) {
+                for (let j = i + 1; j < plants.length; j++) {
+                    const p1 = plants[i];
+                    const p2 = plants[j];
+                    
+                    const compat = p1.isCompatibleWith(p2.id);
+                    if (compat === 1) score += 1;
+                    if (compat === -1) score -= 50;
+                    
+                    if (p2.protectsPlant(p1)) score += 20;
+                    if (p1.protectsPlant(p2)) score += 20;
+                    
+                    const shared = p1.sharesVulnerabilitiesWith(p2);
+                    score -= shared.length * 15;
+                }
+            }
+            
+            const high = plants.filter(p => p.nutrition === 'high').length;
+            const low = plants.filter(p => p.nutrition === 'low').length;
+            if (high > 0 && low > 0) score += 5;
+            if (high === plants.length && plants.length > 2) score -= 10;
+            
+            return score;
+        };
+        
+        app.evaluateLayout = function(beds, forbidden) {
+            let score = 0;
+            beds.forEach((bed, idx) => {
+                score += this.evaluateBed(bed);
+                
+                bed.forEach(plant => {
+                    const isForbidden = forbidden.some(f => f.bedIndex === idx && f.family === plant.family);
+                    if (isForbidden) score -= 30;
+                });
+            });
+            return score;
+        };
+        
+        app.displayOptimizerResults = function(result) {
+            const resultsDiv = document.getElementById('optimizerResults');
+            const mode = this.optimizer.mode;
+            
+            const scorePercent = Math.max(0, Math.min(100, 50 + result.score));
+            let scoreLabel = this.t('optimizer.poor');
+            if (scorePercent >= 80) scoreLabel = this.t('optimizer.excellent');
+            else if (scorePercent >= 70) scoreLabel = this.t('optimizer.veryGood');
+            else if (scorePercent >= 60) scoreLabel = this.t('optimizer.good');
+            else if (scorePercent >= 50) scoreLabel = this.t('optimizer.fair');
+            
+            let html = `
+                <div class="optimization-result">
+                    <h3>${this.t('optimizer.results')}</h3>
+                    <div class="result-score">
+                        ${this.t('optimizer.score')} ${Math.round(scorePercent)}/100 (${scoreLabel})
+                    </div>
+            `;
+            
+            result.beds.forEach((bed, idx) => {
+                const bedNum = idx + 1;
+                const bedName = `${this.t('optimizer.bed')} ${bedNum}`;
+                
+                let wasPlants = '';
+                if (mode === 'fit' && this.garden.beds.has(bedNum)) {
+                    const prevPlants = this.garden.getPlantingsForBed(bedNum, this.currentYear);
+                    wasPlants = prevPlants.map(p => p.getName(this.currentLanguage)).join(', ') || this.t('bed.empty');
+                }
+                
+                const nowPlants = bed.map(p => p.getName(this.currentLanguage)).join(', ');
+                
+                const reasons = [];
+                for (let i = 0; i < bed.length; i++) {
+                    for (let j = i + 1; j < bed.length; j++) {
+                        if (bed[i].isCompatibleWith(bed[j].id) === 1) {
+                            reasons.push(`✓ ${bed[i].getName(this.currentLanguage)} + ${bed[j].getName(this.currentLanguage)}`);
+                        }
+                        if (bed[j].protectsPlant(bed[i])) {
+                            reasons.push(`🛡️ ${bed[j].getName(this.currentLanguage)} protects ${bed[i].getName(this.currentLanguage)}`);
+                        }
+                    }
+                }
+                
+                html += `
+                    <div class="proposed-bed">
+                        <strong>${bedName}</strong>
+                        ${mode === 'fit' ? `
+                            <div class="bed-comparison">
+                                <div><small>${this.t('optimizer.was')}</small> ${wasPlants}</div>
+                                <div class="bed-comparison-arrow">→</div>
+                                <div><small>${this.t('optimizer.now')}</small> ${nowPlants}</div>
+                            </div>
+                        ` : `
+                            <div style="margin-top: 0.5rem;">${nowPlants}</div>
+                        `}
+                        ${reasons.length > 0 ? `
+                            <div class="bed-reasons">
+                                <strong>${this.t('optimizer.reasons')}</strong>
+                                <ul>${reasons.slice(0, 3).map(r => `<li>${r}</li>`).join('')}</ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            // Show unplaced plants if any
+            if (result.unplaced && result.unplaced.length > 0) {
+                html += `
+                    <div class="proposed-bed" style="background: rgba(193, 105, 79, 0.1); border-left: 4px solid var(--terracotta);">
+                        <strong>⚠️ ${this.t('optimizer.unplaced')}</strong>
+                        <div style="margin-top: 0.5rem; color: var(--terracotta);">
+                            <strong>${this.t('optimizer.unplacedPlants')}:</strong> ${result.unplaced.map(p => p.getName(this.currentLanguage)).join(', ')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Show improvement suggestions if score is poor or plants unplaced
+            if (scorePercent < 60 || (result.unplaced && result.unplaced.length > 0)) {
+                const suggestions = [];
+                
+                if (result.unplaced && result.unplaced.length > 0) {
+                    const totalPlants = this.optimizer.selectedPlants.length;
+                    const capacity = result.numBeds * this.optimizer.maxPlantsPerBed;
+                    if (totalPlants > capacity) {
+                        const neededBeds = Math.ceil(totalPlants / this.optimizer.maxPlantsPerBed);
+                        suggestions.push(this.t('optimizer.improveBeds') + ` (${this.t('optimizer.numBeds')}: ${neededBeds})`);
+                        suggestions.push(this.t('optimizer.improvePlantsPerBed'));
+                        suggestions.push(this.t('optimizer.improveRemovePlants'));
+                    }
+                }
+                
+                if (scorePercent < 60 && this.optimizer.mode === 'fit') {
+                    suggestions.push(this.t('optimizer.improveRotation'));
+                }
+                
+                if (suggestions.length > 0) {
+                    html += `
+                        <div class="proposed-bed" style="background: rgba(232, 184, 77, 0.1); border-left: 4px solid var(--sun-yellow);">
+                            <strong>${this.t('optimizer.improvements')}</strong>
+                            <ul style="margin: 0.5rem 0 0 1.5rem;">
+                                ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `
+                    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <button class="btn btn-primary" onclick="app.applyOptimizedLayout()" style="width: 100%;">
+                            ${this.t('optimizer.apply')}
+                        </button>
+                        <button class="btn btn-secondary" onclick="app.runOptimizer()" style="width: 100%;">
+                            ${this.t('optimizer.newCalc')}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+            
+            this.optimizer.proposedLayout = result.beds;
+            this.optimizer.score = result.score;
+        };
+        
+        app.applyOptimizedLayout = function() {
+            if (!confirm(this.t('optimizer.applyConfirm'))) return;
+            
+            this.garden.plantings = this.garden.plantings.filter(p => p.year !== this.currentYear);
+            this.garden.beds.clear();
+            
+            this.optimizer.proposedLayout.forEach((bed, idx) => {
+                const newBed = this.garden.addBed();
+                bed.forEach(plant => {
+                    this.garden.assignToBed(plant.id, newBed.id, this.currentYear);
+                });
+            });
+            
+            this.save();
+            this.render();
+            
+            // Switch to Manual Planning tab to see results
+            this.switchTab('garden');
+            
+            alert(this.t('optimizer.applied'));
+            document.getElementById('optimizerResults').style.display = 'none';
         };
         
         // Initialize app
         app.init();
+        
+        // Touch-friendly tooltips
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            
+            // Check if clicked on pest-icon or companion-tag
+            if (target.classList.contains('pest-icon') || target.classList.contains('companion-tag')) {
+                // Remove all other tooltips
+                document.querySelectorAll('.show-tooltip').forEach(el => {
+                    if (el !== target) el.classList.remove('show-tooltip');
+                });
+                
+                // Toggle tooltip on clicked element
+                if (target.classList.contains('show-tooltip')) {
+                    target.classList.remove('show-tooltip');
+                } else {
+                    // Copy title to data-tooltip for CSS
+                    if (target.title) {
+                        target.setAttribute('data-tooltip', target.title);
+                        target.removeAttribute('title'); // Remove to prevent browser tooltip
+                    }
+                    target.classList.add('show-tooltip');
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        target.classList.remove('show-tooltip');
+                    }, 5000);
+                }
+                
+                // CRITICAL: Prevent event from bubbling to parent bed onclick
+                e.stopPropagation();
+                e.preventDefault();
+            } else {
+                // Click anywhere else closes all tooltips
+                document.querySelectorAll('.show-tooltip').forEach(el => {
+                    el.classList.remove('show-tooltip');
+                });
+            }
+        });
         
         // ============================================
         // PWA SERVICE WORKER & INSTALLATION
