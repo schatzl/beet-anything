@@ -2962,13 +2962,15 @@
             currentYear: 2024,
             wishlist: [],
             currentLanguage: 'en',
+            currentTab: 'garden',
             optimizer: {
                 selectedPlants: [],
                 mode: 'fresh',
                 maxPlantsPerBed: 4,
                 numBeds: 'auto',
                 proposedLayout: null,
-                score: null
+                score: null,
+                savedState: null
             },
             
             init() {
@@ -3582,7 +3584,16 @@
             },
             
             render() {
+                this.renderBeds();
+            },
+            
+            renderBeds() {
                 const grid = document.getElementById('gardenGrid');
+                if (!grid) {
+                    console.error('gardenGrid element not found!');
+                    return;
+                }
+                
                 const beds = Array.from(this.garden.beds.values());
                 
                 if (beds.length === 0) {
@@ -3736,6 +3747,11 @@
             
             // ===== TAB SYSTEM =====
             switchTab(tabName) {
+                // Save optimizer state before switching away
+                if (this.currentTab === 'optimizer') {
+                    this.saveOptimizerState();
+                }
+                
                 document.querySelectorAll('.tab-content').forEach(tab => {
                     tab.classList.remove('active');
                     tab.style.display = 'none';
@@ -3754,6 +3770,58 @@
                     this.initOptimizer();
                     this.optimizer.initialized = true;
                 }
+                
+                // Restore optimizer state when switching back
+                if (tabName === 'optimizer' && this.optimizer.initialized) {
+                    this.restoreOptimizerState();
+                }
+                
+                // Refresh garden view when switching to it
+                if (tabName === 'garden') {
+                    this.renderBeds();
+                }
+                
+                this.currentTab = tabName;
+            },
+            
+            saveOptimizerState() {
+                // Save current selections and settings
+                this.optimizer.savedState = {
+                    selectedPlants: [...this.optimizer.selectedPlants],
+                    mode: this.optimizer.mode,
+                    maxPlantsPerBed: this.optimizer.maxPlantsPerBed,
+                    numBeds: this.optimizer.numBeds
+                };
+            },
+            
+            restoreOptimizerState() {
+                if (!this.optimizer.savedState) return;
+                
+                // Restore selections
+                this.optimizer.selectedPlants = [...this.optimizer.savedState.selectedPlants];
+                this.optimizer.mode = this.optimizer.savedState.mode;
+                this.optimizer.maxPlantsPerBed = this.optimizer.savedState.maxPlantsPerBed;
+                this.optimizer.numBeds = this.optimizer.savedState.numBeds;
+                
+                // Update UI
+                document.getElementById('selectedCount').textContent = this.optimizer.selectedPlants.length;
+                document.getElementById('maxPlantsPerBed').value = this.optimizer.maxPlantsPerBed;
+                document.getElementById('numBeds').value = this.optimizer.numBeds;
+                
+                // Update checkboxes
+                document.querySelectorAll('.plant-checkbox').forEach(cb => {
+                    const plantId = cb.dataset.plantId;
+                    const checked = this.optimizer.selectedPlants.includes(plantId);
+                    cb.classList.toggle('checked', checked);
+                    const checkbox = cb.querySelector('input[type="checkbox"]');
+                    if (checkbox) checkbox.checked = checked;
+                });
+                
+                // Update mode selection
+                document.querySelectorAll('.mode-option').forEach(opt => {
+                    opt.classList.toggle('selected', opt.dataset.mode === this.optimizer.mode);
+                });
+            },
             },
             
             // ===== OPTIMIZER FUNCTIONS =====
@@ -4108,36 +4176,49 @@
         app.applyOptimizedLayout = function() {
             if (!confirm(this.t('optimizer.applyConfirm'))) return;
             
+            console.log('🔄 Applying optimized layout...');
+            console.log('Current beds before clear:', this.garden.beds.size);
+            console.log('Proposed layout:', this.optimizer.proposedLayout);
+            
             // Clear current year plantings
             this.garden.plantings = this.garden.plantings.filter(p => p.year !== this.currentYear);
             
             // Clear all beds
             this.garden.beds.clear();
+            console.log('Beds after clear:', this.garden.beds.size);
             
             // Create new beds from proposed layout
             this.optimizer.proposedLayout.forEach((bed, idx) => {
                 const newBed = this.garden.addBed();
+                console.log(`Created bed ${newBed.id} with ${bed.length} plants`);
                 bed.forEach(plant => {
                     this.garden.assignToBed(plant.id, newBed.id, this.currentYear);
                 });
             });
             
+            console.log('Beds after creation:', this.garden.beds.size);
+            console.log('Plantings:', this.garden.plantings.length);
+            
             // Save to localStorage
             this.save();
+            console.log('Saved to localStorage');
             
             // Switch to Manual Planning tab FIRST
             this.switchTab('garden');
+            console.log('Switched to garden tab');
             
-            // Then render the garden
-            this.render();
-            
-            // Hide optimizer results
-            document.getElementById('optimizerResults').style.display = 'none';
-            
-            // Show success message
+            // Force a small delay to ensure DOM is ready
             setTimeout(() => {
+                // Then render the garden
+                this.render();
+                console.log('Rendered garden');
+                
+                // Hide optimizer results
+                document.getElementById('optimizerResults').style.display = 'none';
+                
+                // Show success message
                 alert(this.t('optimizer.applied'));
-            }, 100);
+            }, 200);
         };
         
         // Initialize app
