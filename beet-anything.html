@@ -3827,8 +3827,20 @@
             const mode = this.optimizer.mode;
             const maxPerBed = this.optimizer.maxPlantsPerBed;
             
-            let numBeds = this.optimizer.numBeds === 'auto' ? Math.ceil(plants.length / maxPerBed) : this.optimizer.numBeds;
-            if (mode === 'fit') numBeds = Math.max(this.garden.beds.size, numBeds);
+            // Calculate numBeds
+            let numBeds;
+            if (this.optimizer.numBeds === null || this.optimizer.numBeds === 'auto') {
+                // Auto mode: calculate based on plants and maxPerBed
+                numBeds = Math.ceil(plants.length / maxPerBed);
+            } else {
+                // Manual mode: use specified number
+                numBeds = this.optimizer.numBeds;
+            }
+            
+            // In Fit mode, ensure we have at least as many beds as currently exist
+            if (mode === 'fit') {
+                numBeds = Math.max(this.garden.beds.size, numBeds);
+            }
             
             const forbidden = [];
             if (mode === 'fit') {
@@ -4096,9 +4108,13 @@
         app.applyOptimizedLayout = function() {
             if (!confirm(this.t('optimizer.applyConfirm'))) return;
             
+            // Clear current year plantings
             this.garden.plantings = this.garden.plantings.filter(p => p.year !== this.currentYear);
+            
+            // Clear all beds
             this.garden.beds.clear();
             
+            // Create new beds from proposed layout
             this.optimizer.proposedLayout.forEach((bed, idx) => {
                 const newBed = this.garden.addBed();
                 bed.forEach(plant => {
@@ -4106,14 +4122,22 @@
                 });
             });
             
+            // Save to localStorage
             this.save();
-            this.render();
             
-            // Switch to Manual Planning tab to see results
+            // Switch to Manual Planning tab FIRST
             this.switchTab('garden');
             
-            alert(this.t('optimizer.applied'));
+            // Then render the garden
+            this.render();
+            
+            // Hide optimizer results
             document.getElementById('optimizerResults').style.display = 'none';
+            
+            // Show success message
+            setTimeout(() => {
+                alert(this.t('optimizer.applied'));
+            }, 100);
         };
         
         // Initialize app
