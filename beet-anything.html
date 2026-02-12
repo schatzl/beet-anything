@@ -3039,7 +3039,12 @@
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     if (translations[lang][key]) {
-                        el.textContent = translations[lang][key];
+                        // Special handling for option elements
+                        if (el.tagName === 'OPTION') {
+                            el.textContent = translations[lang][key];
+                        } else {
+                            el.textContent = translations[lang][key];
+                        }
                     }
                 });
                 
@@ -3202,7 +3207,7 @@
                 this.rotationWizardResult.forEach((bed, idx) => {
                     const newBed = this.garden.addBed();
                     bed.forEach(plant => {
-                        this.garden.assignToBed(plant.id, newBed.id, this.currentYear);
+                        this.garden.addPlanting(newBed.id, this.currentYear, plant.id);
                     });
                 });
                 
@@ -3822,13 +3827,20 @@
                     opt.classList.toggle('selected', opt.dataset.mode === this.optimizer.mode);
                 });
             },
-            },
             
             // ===== OPTIMIZER FUNCTIONS =====
             initOptimizer() {
                 this.renderPlantSelector();
                 document.getElementById('plantSearch').addEventListener('input', (e) => {
                     this.filterPlantSelector(e.target.value);
+                });
+                
+                // Apply translations to optimizer elements
+                document.querySelectorAll('#tab-optimizer [data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[this.currentLanguage][key]) {
+                        el.textContent = translations[this.currentLanguage][key];
+                    }
                 });
             },
             
@@ -3839,7 +3851,7 @@
                 
                 container.innerHTML = veggies.map(veg => {
                     const checked = this.optimizer.selectedPlants.includes(veg.id);
-                    return `<label class="plant-checkbox ${checked ? 'checked' : ''}" data-plant="${veg.id}">
+                    return `<label class="plant-checkbox ${checked ? 'checked' : ''}" data-plant-id="${veg.id}">
                         <input type="checkbox" ${checked ? 'checked' : ''} onchange="app.togglePlant('${veg.id}')">
                         <span>${veg.getName(this.currentLanguage)}</span>
                     </label>`;
@@ -3860,7 +3872,7 @@
                 } else {
                     this.optimizer.selectedPlants.push(plantId);
                 }
-                document.querySelector(`.plant-checkbox[data-plant="${plantId}"]`)?.classList.toggle('checked');
+                document.querySelector(`.plant-checkbox[data-plant-id="${plantId}"]`)?.classList.toggle('checked');
                 this.updateSelectedCount();
             },
             
@@ -3875,17 +3887,31 @@
             },
             
             runOptimizer() {
+                console.log('🧮 runOptimizer called');
+                console.log('Selected plants:', this.optimizer.selectedPlants);
+                console.log('Selected count:', this.optimizer.selectedPlants.length);
+                
                 if (this.optimizer.selectedPlants.length < 3) {
                     alert(this.t('optimizer.noSelection'));
                     return;
                 }
                 
+                console.log('Reading settings...');
                 this.optimizer.maxPlantsPerBed = parseInt(document.getElementById('maxPlantsPerBed').value);
                 const numBedsValue = document.getElementById('numBeds').value;
-                this.optimizer.numBeds = numBedsValue === 'auto' ? null : parseInt(numBedsValue);
+                this.optimizer.numBeds = numBedsValue; // Keep 'auto' as string or number
                 
+                console.log('Max plants per bed:', this.optimizer.maxPlantsPerBed);
+                console.log('Num beds:', this.optimizer.numBeds);
+                console.log('Mode:', this.optimizer.mode);
+                
+                console.log('Calling optimizeLayout...');
                 const result = this.optimizeLayout();
+                console.log('Optimization result:', result);
+                
+                console.log('Displaying results...');
                 this.displayOptimizerResults(result);
+                console.log('Done!');
             }
         };
         
@@ -3901,8 +3927,8 @@
                 // Auto mode: calculate based on plants and maxPerBed
                 numBeds = Math.ceil(plants.length / maxPerBed);
             } else {
-                // Manual mode: use specified number
-                numBeds = this.optimizer.numBeds;
+                // Manual mode: use specified number (parse to int if string)
+                numBeds = parseInt(this.optimizer.numBeds);
             }
             
             // In Fit mode, ensure we have at least as many beds as currently exist
@@ -3913,9 +3939,10 @@
             const forbidden = [];
             if (mode === 'fit') {
                 const prevYear = this.currentYear - 1;
-                this.garden.beds.forEach(bed => {
+                const bedArray = Array.from(this.garden.beds.values());
+                bedArray.forEach((bed, bedIndex) => {
                     this.garden.getPlantingsForBed(bed.id, prevYear).forEach(plant => {
-                        forbidden.push({ bedIndex: bed.id - 1, family: plant.family });
+                        forbidden.push({ bedIndex: bedIndex, family: plant.family });
                     });
                 });
             }
@@ -4077,16 +4104,58 @@
                 
                 const nowPlants = bed.map(p => p.getName(this.currentLanguage)).join(', ');
                 
-                const reasons = [];
+                // Analyze bed for both good and bad factors
+                const goodReasons = [];
+                const badReasons = [];
+                const warnings = [];
+                
+                // Check companion relationships
                 for (let i = 0; i < bed.length; i++) {
                     for (let j = i + 1; j < bed.length; j++) {
-                        if (bed[i].isCompatibleWith(bed[j].id) === 1) {
-                            reasons.push(`✓ ${bed[i].getName(this.currentLanguage)} + ${bed[j].getName(this.currentLanguage)}`);
-                        }
-                        if (bed[j].protectsPlant(bed[i])) {
-                            reasons.push(`🛡️ ${bed[j].getName(this.currentLanguage)} protects ${bed[i].getName(this.currentLanguage)}`);
+                        const compat = bed[i].isCompatibleWith(bed[j].id);
+                        if (compat === 1) {
+                            goodReasons.push(`✓ ${bed[i].getName(this.currentLanguage)} + ${bed[j].getName(this.currentLanguage)} (good companions)`);
+                        } else if (compat === -1) {
+                            badReasons.push(`✗ ${bed[i].getName(this.currentLanguage)} + ${bed[j].getName(this.currentLanguage)} (incompatible!)`);
                         }
                     }
+                }
+                
+                // Check pest protection
+                for (let i = 0; i < bed.length; i++) {
+                    for (let j = 0; j < bed.length; j++) {
+                        if (i === j) continue;
+                        const protects = bed[j].protectsPlant(bed[i]);
+                        if (protects) {
+                            goodReasons.push(`🛡️ ${bed[j].getName(this.currentLanguage)} protects ${bed[i].getName(this.currentLanguage)} from pests`);
+                        }
+                    }
+                }
+                
+                // Check shared pest vulnerabilities
+                const pestCounts = new Map();
+                bed.forEach(plant => {
+                    if (plant.susceptibleTo && Array.isArray(plant.susceptibleTo)) {
+                        plant.susceptibleTo.forEach(pest => {
+                            if (!pestCounts.has(pest)) pestCounts.set(pest, []);
+                            pestCounts.get(pest).push(plant.getName(this.currentLanguage));
+                        });
+                    }
+                });
+                pestCounts.forEach((plants, pest) => {
+                    if (plants.length > 1) {
+                        warnings.push(`⚠️ Shared pest risk (${pest}): ${plants.join(', ')}`);
+                    }
+                });
+                
+                // Check nutrition balance
+                const nutritionCounts = { high: 0, medium: 0, low: 0 };
+                bed.forEach(plant => nutritionCounts[plant.nutrition]++);
+                
+                if (nutritionCounts.high === bed.length && bed.length > 1) {
+                    warnings.push(`⚠️ All heavy feeders - may deplete soil nutrients quickly`);
+                } else if (nutritionCounts.high > 0 && nutritionCounts.low > 0) {
+                    goodReasons.push(`✓ Good nutrition balance (mix of feeders)`);
                 }
                 
                 html += `
@@ -4101,10 +4170,22 @@
                         ` : `
                             <div style="margin-top: 0.5rem;">${nowPlants}</div>
                         `}
-                        ${reasons.length > 0 ? `
-                            <div class="bed-reasons">
-                                <strong>${this.t('optimizer.reasons')}</strong>
-                                <ul>${reasons.slice(0, 3).map(r => `<li>${r}</li>`).join('')}</ul>
+                        ${goodReasons.length > 0 ? `
+                            <div class="bed-reasons" style="margin-top: 0.75rem;">
+                                <strong style="color: var(--leaf-green);">✓ Positive Factors:</strong>
+                                <ul style="margin: 0.25rem 0 0 0;">${goodReasons.map(r => `<li style="color: var(--soil-dark);">${r}</li>`).join('')}</ul>
+                            </div>
+                        ` : ''}
+                        ${badReasons.length > 0 ? `
+                            <div class="bed-reasons" style="margin-top: 0.5rem; background: rgba(193, 105, 79, 0.1); padding: 0.5rem; border-radius: 4px;">
+                                <strong style="color: var(--terracotta);">✗ Issues:</strong>
+                                <ul style="margin: 0.25rem 0 0 0;">${badReasons.map(r => `<li style="color: var(--terracotta);">${r}</li>`).join('')}</ul>
+                            </div>
+                        ` : ''}
+                        ${warnings.length > 0 ? `
+                            <div class="bed-reasons" style="margin-top: 0.5rem;">
+                                <strong style="color: var(--soil-medium);">⚠️ Considerations:</strong>
+                                <ul style="margin: 0.25rem 0 0 0;">${warnings.map(r => `<li style="color: var(--soil-medium); font-size: 0.9rem;">${r}</li>`).join('')}</ul>
                             </div>
                         ` : ''}
                     </div>
@@ -4179,6 +4260,7 @@
             console.log('🔄 Applying optimized layout...');
             console.log('Current beds before clear:', this.garden.beds.size);
             console.log('Proposed layout:', this.optimizer.proposedLayout);
+            console.log('Number of beds in layout:', this.optimizer.proposedLayout.length);
             
             // Clear current year plantings
             this.garden.plantings = this.garden.plantings.filter(p => p.year !== this.currentYear);
@@ -4189,19 +4271,31 @@
             
             // Create new beds from proposed layout
             this.optimizer.proposedLayout.forEach((bed, idx) => {
+                console.log(`Processing bed ${idx}:`, bed);
+                console.log(`  - Is array:`, Array.isArray(bed));
+                console.log(`  - Length:`, bed.length);
+                console.log(`  - Plants:`, bed.map(p => p.id || p));
+                
                 const newBed = this.garden.addBed();
-                console.log(`Created bed ${newBed.id} with ${bed.length} plants`);
-                bed.forEach(plant => {
-                    this.garden.assignToBed(plant.id, newBed.id, this.currentYear);
+                console.log(`  - Created bed with ID ${newBed.id}`);
+                
+                bed.forEach((plant, plantIdx) => {
+                    console.log(`    - Adding plant ${plantIdx}: ${plant.id}`);
+                    this.garden.addPlanting(newBed.id, this.currentYear, plant.id);
                 });
             });
             
             console.log('Beds after creation:', this.garden.beds.size);
-            console.log('Plantings:', this.garden.plantings.length);
+            console.log('Plantings:', this.garden.plantings);
+            console.log('Plantings count:', this.garden.plantings.length);
             
             // Save to localStorage
             this.save();
             console.log('Saved to localStorage');
+            
+            // Reset optimizer mode to Fresh (old bed IDs are now invalid)
+            this.setOptimizerMode('fresh');
+            console.log('Reset mode to Fresh');
             
             // Switch to Manual Planning tab FIRST
             this.switchTab('garden');
